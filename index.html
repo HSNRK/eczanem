@@ -80,7 +80,7 @@ label{font-size:12px;color:var(--muted);display:block;margin:8px 0 3px}
     <div class="center">
       <img src="logo.png" alt="ECZANEM">
       <div>
-        <div style="font-size:26px;font-weight:800;color:var(--primary)">ECZANEM</div>
+        <div style="font-size:26px;font-weight:800;color:var(--primary)">ECZANEM <span class="muted" style="font-size:12px" id="ver"></span></div>
         <div class="muted" id="loginSub">İlaçlarını takip et, hatırlatmaları kaçırma.</div>
       </div>
       <div class="wrap" id="langSel" style="justify-content:center"></div>
@@ -271,6 +271,7 @@ const E=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));E('s-'+id).classList.add('active')}
 
 function render(){
+  E('ver').textContent='v4';
   E('loginSub').textContent=t('tagline');
   E('profilePick').textContent=t('profiles');
   E('lblNew').textContent=t('newProfile');
