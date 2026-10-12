@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ECZANEM</title>
+<link rel="manifest" id="pwaManifest">
+<meta name="theme-color" content="#0e7490">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ECZANEM">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" href="logo.png" type="image/png">
+<style>
+:root{
+  --primary:#0e7490; --primary-d:#155e75; --accent:#14b8a6; --accent-l:#ccfbf1;
+  --bg:#f0fdfa; --card:#ffffff; --text:#1e293b; --muted:#64748b;
+  --danger:#dc2626; --danger-l:#fee2e2; --warn:#b45309; --warn-l:#fef3c7;
+  --ok:#16a34a; --ok-l:#dcfce7; --border:#e2e8f0; --radius:20px; --radius-sm:14px;
+  --fs:16px; --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0b1a20;--card:#15323c;--text:#e6f6f9;--muted:#93b3bd;--border:#24474f;
+        --accent-l:#0e3b3a;--danger-l:#3d0f0f;--warn-l:#3d2200;--ok-l:#12331c;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:var(--fs);min-height:100vh}
+.app{max-width:720px;margin:0 auto;padding:14px}
+.screen{display:none}.screen.active{display:block}
+.topbar{display:flex;align-items:center;gap:10px;background:var(--primary);border-radius:var(--radius);padding:12px 16px;color:#fff;margin-bottom:14px}
+.topbar img{width:40px;height:40px;border-radius:12px;object-fit:contain;background:#fff;padding:2px}
+.topbar .t{font-weight:800;font-size:20px;letter-spacing:.5px}
+.topbar .s{font-size:12px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card h3{font-size:17px;margin-bottom:8px;color:var(--primary)}
+.btn{border:none;border-radius:999px;padding:12px 18px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--font);background:var(--primary);color:#fff;width:100%}
+.btn.ghost{background:var(--accent-l);color:var(--primary)}
+.btn.danger{background:var(--danger)}
+.btn.sm{padding:8px 12px;width:auto;font-size:13px}
+.row{display:flex;gap:8px;align-items:center}
+.wrap{display:flex;flex-wrap:wrap;gap:6px}
+input,select,textarea{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-size:15px;background:var(--bg);color:var(--text);font-family:var(--font);outline:none}
+label{font-size:12px;color:var(--muted);display:block;margin:8px 0 3px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--accent-l);color:var(--primary);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;border:1px solid transparent;cursor:pointer}
+.chip.on{background:var(--primary);color:#fff}
+.badge{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+.badge.red{background:var(--danger-l);color:var(--danger)}
+.badge.warn{background:var(--warn-l);color:var(--warn)}
+.badge.ok{background:var(--ok-l);color:var(--ok)}
+.muted{color:var(--muted);font-size:13px}
+.tabs{display:flex;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:4px;margin-bottom:12px;gap:4px}
+.tab{flex:1;text-align:center;padding:10px;border-radius:16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;background:none;border:none;font-family:var(--font)}
+.tab.on{background:var(--primary);color:#fff}
+.panel{display:none}.panel.on{display:block}
+.med{display:flex;gap:12px;align-items:center}
+.med .ph{width:52px;height:52px;border-radius:var(--radius-sm);background:var(--accent-l);display:flex;align-items:center;justify-content:center;font-size:22px;flex:0 0 auto;object-fit:cover}
+.warnbox{margin-top:10px;background:var(--danger-l);border:1px solid var(--danger);border-radius:var(--radius-sm);padding:10px;font-size:13px;color:var(--danger)}
+.dose{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-sm)}
+.dose.done{background:var(--ok-l)}
+.check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.check.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;gap:14px;text-align:center}
+.center img{width:96px;height:96px}
+.section{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal.open{display:flex}
+.sheet{background:var(--card);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:720px;max-height:92vh;overflow-y:auto;padding:18px}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ai{background:var(--accent-l);border-radius:var(--radius-sm);padding:10px;font-size:13px;margin-top:8px}
+.list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.list-item:last-child{border:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- PROFİL / GİRİŞ -->
+  <div id="s-login" class="screen active">
+    <div class="center">
+      <img src="logo.png" alt="ECZANEM">
+      <div>
+        <div style="font-size:26px;font-weight:800;color:var(--primary)">ECZANEM</div>
+        <div class="muted" id="loginSub">İlaçlarını takip et, hatırlatmaları kaçırma.</div>
+      </div>
+      <div class="wrap" id="langSel" style="justify-content:center"></div>
+      <div class="card" style="width:100%">
+        <div class="section" id="profilePick">Profil Seç / Ekle</div>
+        <div id="profileList"></div>
+        <label id="lblNew">Yeni profil adı</label>
+        <div class="row">
+          <input id="newProfile" placeholder="ör. Annem">
+          <button class="btn sm" onclick="addProfile()">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANA EKRAN -->
+  <div id="s-main" class="screen">
+    <div class="topbar">
+      <img src="logo.png">
+      <div style="flex:1"><div class="t">ECZANEM</div><div class="s" id="mainProfile"></div></div>
+      <button class="btn sm ghost" onclick="switchProfile()" id="btnSwitch">Değiştir</button>
+    </div>
+    <div class="tabs" id="tabs"></div>
+
+    <div id="p-today" class="panel on">
+      <div id="todayBody"></div>
+    </div>
+    <div id="p-meds" class="panel">
+      <button class="btn" onclick="openAdd()" style="margin-bottom:12px" id="btnAdd">+ İlaç Ekle</button>
+      <div id="medsBody"></div>
+    </div>
+    <div id="p-settings" class="panel">
+      <div class="card">
+        <h3 id="stFont">🔠 Yazı Boyutu</h3>
+        <div class="muted" id="stFontHint">Yaşlılar için tüm ekranlarda büyütülebilir.</div>
+        <div class="wrap" style="margin-top:8px" id="fontBtns"></div>
+      </div>
+      <div class="card">
+        <h3 id="stLang">🌐 Dil</h3>
+        <div class="wrap" style="margin-top:8px" id="langBtns2"></div>
+      </div>
+      <div class="card">
+        <h3 id="stKey">🔑 AI Anahtarı (OpenRouter)</h3>
+        <div class="muted" id="stKeyHint">Fotoğraftan okuma için. Cihazında saklanır.</div>
+        <label>sk-or-...</label>
+        <input id="orKey" placeholder="sk-or-...">
+        <button class="btn ghost" style="margin-top:8px" onclick="saveKey()" id="btnSaveKey">Kaydet</button>
+      </div>
+      <div class="card">
+        <h3 id="stAbout">⚠️ Sorumluluk Reddi</h3>
+        <div class="muted" id="aboutText"></div>
+        <button class="btn danger" style="margin-top:10px" onclick="resetAll()" id="btnReset">Tüm verileri sil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<input type="file" accept="image/*" capture="environment" id="camIn" style="display:none">
+
+<script>
+/* ============ ECZANEM PWA — tek dosya, derlemesiz ============ */
+/* AI anahtarı koda GÖMÜLMEZ — Ayarlar'dan girilir, cihazda (localStorage) saklanır. */
+const OR_KEY_DEFAULT='';
+const MODEL='google/gemini-2.5-flash';
+
+/* ---- i18n ---- */
+const L={
+ tr:{flag:'🇹🇷',name:'TR',tagline:'İlaçlarını takip et, hatırlatmaları kaçırma.',profiles:'Profil Seç / Ekle',newProfile:'Yeni profil adı',switchP:'Değiştir',tabToday:'Bugün',tabMeds:'İlaçlar',tabSet:'Ayarlar',addMed:'+ İlaç Ekle',noMeds:'Henüz ilaç yok.',noActive:'Aktif ilaç yok',noActiveB:'İlk ilacını ekleyerek planını başlat.',progress:'{d}/{t} doz alındı',taken:'Alındı',pending:'Alınacak',purpose:'Ne işe yarar?',doseT:'Doz',usageT:'Kullanım şekli',contra:'Kullanılmaması gereken durumlar',side:'Yan etkiler',noInfo:'Bilgi eklenmedi.',del:'Sil',tet:'Son kullanma',left:'{n} doz kaldı',interact:'⚠️ Etkileşim Uyarısı',withDrug:'{d} ile kullanılmaz',addPhoto:'📸 Fotoğraf (kutu/prospektüs)',readPhoto:'📷 Fotoğraftan Oku',reading:'Okunuyor…',name:'İlaç adı',dosage:'Doz',usage:'Kullanım şekli',timeQ:'Günde kaç kez?',daily:'Günde {n}',every:'Her {n} saatte bir ({d} doz)',addTime:'+ Saat',save:'Kaydet',presc:'Reçete adedi',tetL:'Son kullanma (AA-YYYY)',errKey:'Önce Ayarlar → AI Anahtarı gir.',errBad:'AI anahtarı geçersiz.',errGen:'Fotoğraf okunamadı.',errNo:'Önce fotoğraf seç.',font:'🔠 Yazı Boyutu',fontH:'Yaşlılar için büyütülebilir.',lang:'🌐 Dil',key:'🔑 AI Anahtarı (OpenRouter)',keyH:'Fotoğraftan okuma için. Cihazında saklanır.',about:'⚠️ Sorumluluk Reddi',aboutT:'ECZANEM yalnızca bilgilendirme amaçlıdır; doktor, eczacı ya da resmî prospektüsün yerini tutmaz.',reset:'Tüm verileri sil',sizes:['Normal','Büyük','Çok Büyük']},
+ en:{flag:'🇬🇧',name:'EN',tagline:'Track your meds, never miss a dose.',profiles:'Choose / Add Profile',newProfile:'New profile name',switchP:'Switch',tabToday:'Today',tabMeds:'Meds',tabSet:'Settings',addMed:'+ Add Medication',noMeds:'No medications yet.',noActive:'No active medications',noActiveB:'Add your first medication to start.',progress:'{d}/{t} doses taken',taken:'Taken',pending:'Pending',purpose:'What for?',doseT:'Dose',usageT:'How to use',contra:'Do not use when',side:'Side effects',noInfo:'No information.',del:'Delete',tet:'Expiry',left:'{n} doses left',interact:'⚠️ Interaction Warning',withDrug:'Do not use with {d}',addPhoto:'📸 Photo (box/leaflet)',readPhoto:'📷 Read from Photo',reading:'Reading…',name:'Medication name',dosage:'Dose',usage:'Usage',timeQ:'Times per day?',daily:'{n}x daily',every:'Every {n}h ({d} doses)',addTime:'+ Time',save:'Save',presc:'Count',tetL:'Expiry (MM-YYYY)',errKey:'Add AI key in Settings first.',errBad:'AI key invalid.',errGen:'Could not read photo.',errNo:'Pick a photo first.',font:'🔠 Text Size',fontH:'Enlarge for easy reading.',lang:'🌐 Language',key:'🔑 AI Key (OpenRouter)',keyH:'For photo reading. Stored on device.',about:'⚠️ Disclaimer',aboutT:'ECZANEM is informational only; not a substitute for your doctor/pharmacist.',reset:'Delete all data',sizes:['Normal','Large','Very Large']},
+ es:{flag:'🇪🇸',name:'ES',tagline:'Controla tus medicamentos.',profiles:'Elegir / Añadir Perfil',newProfile:'Nombre del perfil',switchP:'Cambiar',tabToday:'Hoy',tabMeds:'Medicinas',tabSet:'Ajustes',addMed:'+ Añadir',noMeds:'Sin medicamentos.',noActive:'Sin medicamentos activos',noActiveB:'Añade el primero para empezar.',progress:'{d}/{t} dosis tomadas',taken:'Tomado',pending:'Pendiente',purpose:'¿Para qué?',doseT:'Dosis',usageT:'Modo de uso',contra:'No usar cuando',side:'Efectos secundarios',noInfo:'Sin información.',del:'Eliminar',tet:'Caducidad',left:'{n} dosis restantes',interact:'⚠️ Interacción',withDrug:'No usar con {d}',addPhoto:'📸 Foto (caja/prospecto)',readPhoto:'📷 Leer de Foto',reading:'Leyendo…',name:'Nombre',dosage:'Dosis',usage:'Uso',timeQ:'¿Veces al día?',daily:'{n}x al día',every:'Cada {n}h ({d} dosis)',addTime:'+ Hora',save:'Guardar',presc:'Cantidad',tetL:'Caducidad (MM-AAAA)',errKey:'Añade la clave IA en Ajustes.',errBad:'Clave IA inválida.',errGen:'No se pudo leer la foto.',errNo:'Primero elige una foto.',font:'🔠 Tamaño',fontH:'Agranda para leer.',lang:'🌐 Idioma',key:'🔑 Clave IA (OpenRouter)',keyH:'Para leer fotos. En tu dispositivo.',about:'⚠️ Aviso',aboutT:'ECZANEM es solo informativo; no sustituye a su médico/farmacéutico.',reset:'Borrar todo',sizes:['Normal','Grande','Muy Grande']}
+};
+let lang=localStorage.getItem('ez_lang')||'tr';
+let scale=parseFloat(localStorage.getItem('ez_scale')||'1');
+const t=k=>L[lang][k]||k;
+function tf(k,v){let s=L[lang][k]||k;for(const[x,y]of Object.entries(v))s=s.replace('{'+x+'}',y);return s}
+
+/* ---- Veri ---- */
+const store={
+  profiles:JSON.parse(localStorage.getItem('ez_profiles')||'[]'),
+  active:localStorage.getItem('ez_active')||'',
+  meds:JSON.parse(localStorage.getItem('ez_meds')||'[]'),
+  save(){localStorage.setItem('ez_profiles',JSON.stringify(this.profiles));localStorage.setItem('ez_active',this.active);localStorage.setItem('ez_meds',JSON.stringify(this.meds))}
+};
+if(!store.profiles.length){store.profiles=[{id:'me',name:'Ben',emoji:'🙂'}];store.active='me';store.save()}
+const myMeds=()=>store.meds.filter(m=>m.profile===store.active);
+const today=()=>new Date().toISOString().slice(0,10);
+const remaining=m=>Math.max(0,m.total-m.taken);
+
+/* ---- İlaç bilgi tabanı + etkileşim ---- */
+const CATALOG=[
+ {name:'PAROL 500 mg',ing:'Parasetamol',cat:'Ağrı kesici',purpose:'Hafif-orta ağrı ve ateş.',usage:'Yemekten sonra, su ile.',dosage:'Günde 3-4 kez 1 tablet.',contra:['Parasetamole alerji','Ağır karaciğer yetmezliği'],side:'Nadiren döküntü; yüksek dozda karaciğer toksisitesi.'},
+ {name:'ASPİRİN 500 mg',ing:'Asetilsalisilik asit',cat:'Ağrı/kan sulandırıcı',purpose:'Ağrı, ateş, iltihap.',usage:'Yemekle.',dosage:'Günde 2-4 kez 1 tablet.',contra:['Mide ülseri','Kanama bozukluğu','18 yaş altı'],side:'Mide rahatsızlığı, kanama riski.'},
+ {name:'MAJEZİK 100 mg',ing:'Flurbiprofen',cat:'İltihap önleyici (NSAİİ)',purpose:'Eklem/kas/diş ağrısı.',usage:'Yemekle.',dosage:'Günde 2-3 kez 1 tablet.',contra:['Mide ülseri','Ağır böbrek yetmezliği','Aspirin alerjisi'],side:'Mide ağrısı, kanama riski.'},
+ {name:'DOLOREX',ing:'Naproksen sodyum',cat:'İltihap önleyici (NSAİİ)',purpose:'Adet/diş/kas ağrısı.',usage:'Yemekle.',dosage:'Günde 2 kez 1 tablet.',contra:['Mide ülseri','Ağır kalp yetmezliği'],side:'Mide rahatsızlığı, baş dönmesi.'},
+ {name:'CORASPİN 100 mg',ing:'Asetilsalisilik asit',cat:'Kan sulandırıcı',purpose:'Kalp/inme riskini azaltır.',usage:'Yemekle, doktor önerisiyle.',dosage:'Günde 1 tablet.',contra:['Aktif ülser','Kanama bozukluğu'],side:'Kanama riski, morarma.'},
+ {name:'COUMADİN (warfarin)',ing:'Warfarin',cat:'Antikoagülan',purpose:'Pıhtıyı önler.',usage:'Doktor kontrolü, INR takibi.',dosage:'Bireysel ayar.',contra:['Aktif kanama','Hamilelik','Ağır karaciğer hastalığı'],side:'Kanama riski.'},
+ {name:'AUGMENTİN',ing:'Amoksisilin + Klavulanik asit',cat:'Antibiyotik',purpose:'Bakteriyel enfeksiyon.',usage:'Yemekle, düzenli.',dosage:'Günde 2-3 kez (doktor).',contra:['Penisilin alerjisi'],side:'İshal, bulantı.'},
+ {name:'CEFAKS',ing:'Sefuroksim',cat:'Antibiyotik',purpose:'Solunum/idrar yolu enfeksiyonu.',usage:'Yemekle.',dosage:'Günde 2 kez (doktor).',contra:['Sefalosporin alerjisi'],side:'İshal, bulantı.'},
+ {name:'NEXİUM',ing:'Esomeprazol',cat:'Mide koruyucu',purpose:'Reflü, ülser koruması.',usage:'Aç karnına, günde 1.',dosage:'Günde 1 kapsül.',contra:['Esomeprazole aşırı duyarlılık'],side:'Baş ağrısı, karın ağrısı.'},
+ {name:'CONCOR',ing:'Bisoprolol',cat:'Tansiyon/kalp',purpose:'Hipertansiyon, kalp yetmezliği.',usage:'Sabah aç karnına.',dosage:'Günde 1 (doktor).',contra:['Çok düşük nabız','Şiddetli astım'],side:'Yorgunluk, yavaş nabız.'},
+ {name:'NORVASC',ing:'Amlodipin',cat:'Tansiyon',purpose:'Hipertansiyon.',usage:'Yemekten bağımsız.',dosage:'Günde 1 tablet.',contra:['Ciddi düşük tansiyon'],side:'Ayak şişmesi, baş ağrısı.'},
+ {name:'GLUCOPHAGE (metformin)',ing:'Metformin',cat:'Diyabet',purpose:'Kan şekerini düşürür.',usage:'Yemekle.',dosage:'Günde 2-3 kez (doktor).',contra:['Böbrek yetmezliği','Metabolik asidoz'],side:'Mide rahatsızlığı.'},
+];
+const RULES=[
+ ['Warfarin','Asetilsalisilik asit','Warfarin ve aspirin birlikte kanama riskini ciddi artırır.'],
+ ['Warfarin','Flurbiprofen','Warfarin + NSAİİ kanama riskini artırır.'],
+ ['Warfarin','Naproksen sodyum','Warfarin + NSAİİ kanama riskini artırır.'],
+ ['Asetilsalisilik asit','Flurbiprofen','İki NSAİİ mide kanaması riskini artırır.'],
+ ['Asetilsalisilik asit','Naproksen sodyum','İki NSAİİ mide kanaması riskini artırır.'],
+ ['Flurbiprofen','Naproksen sodyum','İki NSAİİ birlikte kullanılmamalı; kanama/böbrek hasarı.'],
+];
+function interactions(med){
+  const out=[];
+  for(const o of myMeds()){ if(o.id===med.id)continue;
+    for(const[a,b,msg]of RULES){
+      const x=[med.ing.trim().toLowerCase(),o.ing.trim().toLowerCase()].sort().join('|');
+      const y=[a.toLowerCase(),b.toLowerCase()].sort().join('|');
+      if(x===y)out.push({with:o.ing,msg});
+    }
+  }
+  return out;
+}
+
+/* ---- Dil / ekran çizim ---- */
+function applyFont(){document.documentElement.style.setProperty('--fs',(16*scale)+'px')}
+function setLang(l){lang=l;localStorage.setItem('ez_lang',l);render()}
+function setScale(s){scale=s;localStorage.setItem('ez_scale',s);applyFont();render()}
+const E=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));E('s-'+id).classList.add('active')}
+
+function render(){
+  E('loginSub').textContent=t('tagline');
+  E('profilePick').textContent=t('profiles');
+  E('lblNew').textContent=t('newProfile');
+  E('btnSwitch').textContent=t('switchP');
+  E('mainProfile').textContent=(store.profiles.find(p=>p.id===store.active)||{}).name||'';
+  E('tabs').innerHTML=`<button class="tab on" onclick="tab('today',this)">${t('tabToday')}</button>
+    <button class="tab" onclick="tab('meds',this)">${t('tabMeds')}</button>
+    <button class="tab" onclick="tab('settings',this)">${t('tabSet')}</button>`;
+  E('btnAdd').textContent=t('addMed');
+  E('stFont').textContent=t('font');E('stFontHint').textContent=t('fontH');
+  E('stLang').textContent=t('lang');E('stKey').textContent=t('key');E('stKeyHint').textContent=t('keyH');
+  E('btnSaveKey').textContent=t('save');E('stAbout').textContent=t('about');E('aboutText').textContent=t('aboutT');E('btnReset').textContent=t('reset');
+  E('langSel').innerHTML=Object.keys(L).map(k=>`<button class="chip${k===lang?' on':''}" onclick="setLang('${k}')">${L[k].flag} ${L[k].name}</button>`).join('');
+  E('langBtns2').innerHTML=Object.keys(L).map(k=>`<button class="chip${k===lang?' on':''}" onclick="setLang('${k}')">${L[k].flag} ${L[k].name}</button>`).join('');
+  E('fontBtns').innerHTML=[1,1.25,1.5].map((s,i)=>`<button class="chip${scale===s?' on':''}" onclick="setScale(${s})">${t('sizes')[i]}</button>`).join('');
+  E('orKey').value=localStorage.getItem('ez_key')||'';
+  renderProfiles();renderToday();renderMeds();
+}
+function renderProfiles(){
+  E('profileList').innerHTML=store.profiles.map(p=>`<div class="list-item"><span>${p.emoji} ${p.name}</span>
+    ${p.id!=='me'?`<button class="btn sm danger" onclick="delProfile('${p.id}')">✕</button>`:''}</div>`).join('');
+}
+function addProfile(){const v=E('newProfile').value.trim();if(!v)return;store.profiles.push({id:'p'+Date.now(),name:v,emoji:'👤'});store.save();E('newProfile').value='';render()}
+function delProfile(id){if(!confirm(t('del')+'?'))return;store.profiles=store.profiles.filter(p=>p.id!==id);store.meds=store.meds.filter(m=>m.profile!==id);if(store.active===id)store.active='me';store.save();render()}
+function pickProfile(id){store.active=id;store.save();show('main');tab('today',document.querySelector('.tab'));render()}
+function switchProfile(){show('login');render()}
+E('profileList').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it&&!e.target.closest('button')){const name=it.querySelector('span').textContent.trim().replace(/^\S+\s/,'');const p=store.profiles.find(x=>x.name===name);if(p)pickProfile(p.id)}});
+
+function tab(name,el){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));if(el)el.classList.add('on');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));E('p-'+name).classList.add('on');if(name==='today')renderToday();if(name==='meds')renderMeds()}
+
+/* ---- Bugün ---- */
+function renderToday(){
+  const meds=myMeds().filter(m=>remaining(m)>0);const body=E('todayBody');
+  if(!meds.length){body.innerHTML=`<div class="card"><h3>${t('noActive')}</h3><div class="muted" style="margin:8px 0">${t('noActiveB')}</div><button class="btn" onclick="openAdd()">${t('addMed')}</button></div>`;return}
+  const plan={};let tot=0,done=0;
+  meds.forEach(m=>{const ts=m.times||[];tot+=ts.length;ts.forEach(tm=>{const tk=tkKey(m.id,tm,today());if(m.doses&&m.doses[tk])done++;plan[tm]=plan[tm]||[];plan[tm].push({m,tm})})});
+  body.innerHTML=`<div class="muted" style="margin-bottom:8px">${tf('progress',{d:done,t:tot})}</div>`+
+   Object.keys(plan).sort().map(tm=>`<div class="card"><div style="font-size:20px;font-weight:800;color:var(--primary);margin-bottom:6px">${tm}</div>`+
+    plan[tm].map(({m})=>{const tk=tkKey(m.id,tm,today());const on=m.doses&&m.doses[tk];return `<div class="dose ${on?'done':''}" onclick="toggleDose('${m.id}','${tm}')"><div class="check ${on?'done':''}">${on?'✓':''}</div><div style="flex:1"><div style="font-weight:700">${m.name}</div><div class="muted">${m.dosage||''}</div></div><div class="muted" style="color:${on?'var(--ok)':'var(--warn)'}">${on?t('taken'):t('pending')}</div></div>`}).join('')+`</div>`).join('');
+}
+const tkKey=(id,tm,day)=>id+'|'+tm+'|'+day;
+function toggleDose(id,tm){
+  const m=store.meds.find(x=>x.id===id);if(!m)return;m.doses=m.doses||{};const k=tkKey(id,tm,today());
+  m.doses[k]=!m.doses[k];m.taken=Math.max(0,Math.min(m.total,(m.taken||0)+(m.doses[k]?1:-1)));store.save();renderToday();renderMeds();
+}
+
+/* ---- İlaçlar ---- */
+function renderMeds(){
+  const meds=myMeds().filter(m=>remaining(m)>0);const body=E('medsBody');
+  if(!meds.length){body.innerHTML=`<div class="card"><div class="muted">${t('noMeds')}</div></div>`;return}
+  body.innerHTML=meds.map(m=>{
+    const ints=interactions(m);const warn=ints.map(i=>tf('withDrug',{d:i.with.split(' ')[0]}));
+    return `<div class="card" onclick="openDetail('${m.id}')">
+      <div class="med">${m.photo?`<img class="ph" src="${m.photo}">`:`<div class="ph">💊</div>`}
+      <div style="flex:1"><div style="font-weight:800">${m.name}</div><div class="muted">${m.dosage||''} · ${(m.times||[]).join(' / ')}</div>
+      <div class="wrap" style="margin-top:6px">${m.expiry?`<span class="badge warn">${t('tet')}: ${m.expiry}</span>`:''}<span class="badge ok">${tf('left',{n:remaining(m)})}</span></div></div></div>
+      ${warn.length?`<div class="warnbox">⚠️ ${warn.join(' · ')}</div>`:''}
+    </div>`}).join('');
+}
+
+/* ---- Detay ---- */
+function openDetail(id){
+  const m=store.meds.find(x=>x.id===id);if(!m)return;const ints=interactions(m);
+  openSheet(`
+    ${ints.length?`<div class="warnbox" style="border-width:2px"><b>${t('interact')}</b>${ints.map(i=>`<div style="margin-top:6px"><b>${tf('withDrug',{d:i.with})}</b><br>${i.msg}</div>`).join('')}</div>`:''}
+    <div class="med" style="margin:12px 0">${m.photo?`<img class="ph" style="width:72px;height:72px" src="${m.photo}">`:`<div class="ph" style="width:72px;height:72px">💊</div>`}
+      <div><div style="font-size:20px;font-weight:800">${m.name}</div><div class="muted">${m.ing||''}</div></div></div>
+    ${sec(t('purpose'),m.purpose)}${sec(t('doseT'),m.dosage+(m.times&&m.times.length?`<div class="muted">${m.times.join(' / ')}</div>`:''))}
+    ${sec(t('usageT'),m.usage)}${sec(t('contra'),(m.contra&&m.contra.length)?m.contra.map(c=>'• '+c).join('<br>'):t('noInfo'))}
+    ${sec(t('side'),m.side)}
+    <button class="btn danger" style="margin-top:12px" onclick="delMed('${m.id}')">${t('del')}</button>
+  `);
+}
+const sec=(h,b)=>`<div class="card"><h3>${h}</h3><div>${b||t('noInfo')}</div></div>`;
+function delMed(id){if(!confirm(t('del')+'?'))return;store.meds=store.meds.filter(m=>m.id!==id);store.save();closeSheet();renderMeds();renderToday()}
+
+/* ---- Ekle ---- */
+let draft={times:['08:00','20:00'],photo:'',b64:''};
+function openAdd(){
+  draft={times:['08:00','20:00'],photo:'',b64:''};
+  openSheet(`
+    <h3>${t('addMed')}</h3>
+    <button class="btn ghost" onclick="cam()">${t('addPhoto')}</button>
+    <div id="pv"></div>
+    <button class="btn ghost" onclick="readPhoto()" id="btnRead" style="margin-top:8px">${t('readPhoto')}</button>
+    <div id="aiRes"></div>
+    <label>${t('name')}</label><input id="fName">
+    <label>${t('dosage')}</label><input id="fDose">
+    <label>${t('usage')}</label><input id="fUse">
+    <label>${t('purpose')}</label><input id="fPurpose">
+    <label>${t('contra')}</label><textarea id="fContra" rows="2"></textarea>
+    <label>${t('side')}</label><textarea id="fSide" rows="2"></textarea>
+    <div class="section">${t('timeQ')}</div>
+    <div class="wrap" id="freq"></div>
+    <div class="wrap" id="times" style="margin-top:6px"></div>
+    <div class="row" style="margin-top:6px"><button class="btn sm ghost" onclick="addTime()">${t('addTime')}</button></div>
+    <label>${t('presc')}</label><input type="number" id="fTotal" value="60">
+    <label>${t('tetL')}</label><input id="fTet" placeholder="12-2027">
+    <button class="btn" style="margin-top:14px" onclick="saveMed()">${t('save')}</button>
+  `);
+  renderFreq();renderTimes();
+}
+function renderFreq(){E('freq').innerHTML=[
+  {l:tf('daily',{n:1}),ts:['08:00']},{l:tf('daily',{n:2}),ts:['08:00','20:00']},{l:tf('daily',{n:3}),ts:['08:00','14:00','20:00']},
+  {l:tf('every',{n:6,d:4}),ts:['06:00','12:00','18:00','00:00']},{l:tf('every',{n:4,d:6}),ts:['04:00','08:00','12:00','16:00','20:00','00:00']}
+].map(f=>`<button class="chip" onclick='draft.times=${JSON.stringify(f.ts)};renderTimes()'>${f.l}</button>`).join('')}
+function renderTimes(){E('times').innerHTML=draft.times.sort().map(tm=>`<span class="chip on" onclick='draft.times=draft.times.filter(x=>x!="${tm}");renderTimes()'>${tm} ✕</span>`).join('')}
+function addTime(){const v=prompt(t('addTime')+' (SS:DD)','08:00');if(v&&/^\d{2}:\d{2}$/.test(v)){if(!draft.times.includes(v))draft.times.push(v);renderTimes()}}
+function cam(){E('camIn').click()}
+E('camIn').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{draft.photo=r.result};r.readAsDataURL(f);
+  // küçült + base64
+  const img=new Image();img.onload=()=>{const MAX=1280;let w=img.width,h=img.height;if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);draft.b64=c.toDataURL('image/jpeg',0.75).split(',')[1];E('pv').innerHTML=`<img src="${draft.photo}" style="width:100%;border-radius:14px;margin-top:10px">`};img.src=r.result;
+});
+async function readPhoto(){
+  const key=localStorage.getItem('ez_key')||OR_KEY_DEFAULT;
+  if(!key){E('aiRes').innerHTML=`<div class="ai">${t('errKey')}</div>`;return}
+  if(!draft.b64){E('aiRes').innerHTML=`<div class="ai">${t('errNo')}</div>`;return}
+  E('aiRes').innerHTML=`<div class="ai"><span class="spinner"></span>${t('reading')}</div>`;
+  try{
+    const prompt=`Şu ilaç fotoğrafını oku (prospektüs/kutu). Tüm görünür bilgiyi çıkar. SADECE şu JSON: {"name":"ilaç adı","ing":"etken madde","dosage":"doz","usage":"kullanım şekli","purpose":"ne işe yarar","contra":["kullanılmaması gereken durumlar"],"side":"yan etkiler"}. Görünmeyen alanı boş bırak, uydurma.`;
+    const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:MODEL,max_tokens:900,messages:[{role:'user',content:[{type:'image_url',image_url:{url:'data:image/jpeg;base64,'+draft.b64}},{type:'text',text:prompt}]}]})});
+    if(res.status===401||res.status===403)throw new Error('BAD');
+    const d=await res.json();const txt=(d.choices&&d.choices[0]&&d.choices[0].message.content)||'';
+    const j=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    if(j.name)E('fName').value=j.name;if(j.dosage)E('fDose').value=j.dosage;if(j.usage)E('fUse').value=j.usage;
+    if(j.purpose)E('fPurpose').value=j.purpose;if(j.side)E('fSide').value=j.side;if(Array.isArray(j.contra))E('fContra').value=j.contra.join('\n');
+    E('aiRes').innerHTML=`<div class="ai">✅ ${j.name||''}</div>`;
+  }catch(e){E('aiRes').innerHTML=`<div class="ai">${e.message==='BAD'?t('errBad'):t('errGen')}</div>`}
+}
+function saveMed(){
+  const name=E('fName').value.trim();if(!name){alert(t('name'));return}
+  const match=CATALOG.find(c=>name.toLowerCase().includes(c.name.split(' ')[0].toLowerCase()));
+  store.meds.push({id:'m'+Date.now(),profile:store.active,name,ing:(match&&match.ing)||'',dosage:E('fDose').value||(match&&match.dosage)||'',
+    usage:E('fUse').value||(match&&match.usage)||'',purpose:E('fPurpose').value||(match&&match.purpose)||'',side:E('fSide').value||(match&&match.side)||'',
+    contra:(E('fContra').value||'').split('\n').filter(Boolean),expiry:E('fTet').value||'',photo:draft.photo||'',times:[...draft.times],
+    total:parseInt(E('fTotal').value)||60,taken:0,doses:{},created:Date.now()});
+  store.save();closeSheet();renderMeds();renderToday();
+}
+
+/* ---- Ayarlar ---- */
+function saveKey(){localStorage.setItem('ez_key',E('orKey').value.trim());alert('✓')}
+function resetAll(){if(!confirm(t('reset')+'?'))return;localStorage.clear();location.reload()}
+
+/* ---- Modal ---- */
+function openSheet(html){E('sheet').innerHTML=html;E('modal').classList.add('open');E('modal').onclick=e=>{if(e.target===E('modal'))closeSheet()}}
+function closeSheet(){E('modal').classList.remove('open');E('sheet').innerHTML=''}
+
+/* ---- PWA ---- */
+(function(){
+  const mf={name:'ECZANEM',short_name:'ECZANEM',start_url:'./',display:'standalone',background_color:'#f0fdfa',theme_color:'#0e7490',lang:lang,
+    icons:[{src:'logo.png',sizes:'192x192',type:'image/png'},{src:'logo.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+  const b=new Blob([JSON.stringify(mf)],{type:'application/json'});E('pwaManifest').href=URL.createObjectURL(b);
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
+})();
+
+/* ---- Başlat ---- */
+applyFont();render();
+if(store.active&&store.meds.length){show('login')}else{show('login')}
+</script>
+</body>
+</html>
