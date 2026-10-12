@@ -85,6 +85,15 @@ label{font-size:12px;color:var(--muted);display:block;margin:8px 0 3px}
       </div>
       <div class="wrap" id="langSel" style="justify-content:center"></div>
       <div class="card" style="width:100%">
+        <div class="section" id="acctLbl">Hesap (bulut senkron)</div>
+        <label id="lblUser">Kullanıcı Adı</label>
+        <input id="acctUser" placeholder="kullanici_adi" autocomplete="username">
+        <label id="lblPin">Şifre (6 hane)</label>
+        <input id="acctPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="current-password">
+        <button class="btn" style="margin-top:10px" onclick="login()" id="btnLogin">Giriş / Kayıt Ol</button>
+        <div class="muted" id="loginStatus" style="margin-top:8px;min-height:16px;text-align:center"></div>
+      </div>
+      <div class="card" style="width:100%" id="profilesCard" hidden>
         <div class="section" id="profilePick">Profil Seç / Ekle</div>
         <div id="profileList"></div>
         <label id="lblNew">Yeni profil adı</label>
@@ -102,6 +111,7 @@ label{font-size:12px;color:var(--muted);display:block;margin:8px 0 3px}
       <img src="logo.png">
       <div style="flex:1"><div class="t">ECZANEM</div><div class="s" id="mainProfile"></div></div>
       <button class="btn sm ghost" onclick="switchProfile()" id="btnSwitch">Değiştir</button>
+      <button class="btn sm ghost" onclick="signout()" style="background:var(--danger);color:#fff" id="btnOut">Çıkış</button>
     </div>
     <div class="tabs" id="tabs"></div>
 
@@ -146,6 +156,54 @@ label{font-size:12px;color:var(--muted);display:block;margin:8px 0 3px}
 /* AI anahtarı koda GÖMÜLMEZ — Ayarlar'dan girilir, cihazda (localStorage) saklanır. */
 const OR_KEY_DEFAULT='';
 const MODEL='google/gemini-2.5-flash';
+
+/* ---- Supabase (bulut veri) ---- */
+const SB_URL='https://nppjitjfobjukgbrbbkx.supabase.co';
+const SB_KEY='sb_publishable_2cBHuRkDEQLs9T83T1LpVg_wSjLgU4h';
+async function sbFetch(path,method='GET',body=null,prefer='return=representation'){
+  const h={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  if(prefer)h['Prefer']=prefer;
+  const opts={method,headers:h};
+  if(body)opts.body=JSON.stringify(body);
+  const r=await fetch(SB_URL+path,opts);
+  if(!r.ok){throw new Error(await r.text())}
+  const txt=await r.text();return txt?JSON.parse(txt):[];
+}
+/* ---- Hesap / bulut senkron ---- */
+let uid=localStorage.getItem('ez_uid')||'';
+async function hashPin(p){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(p));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function login(){
+  const u=E('acctUser').value.trim().toLowerCase().replace(/\s+/g,'_');
+  const pin=E('acctPin').value.trim();
+  if(!u||!/^\d{6}$/.test(pin)){E('loginStatus').textContent='Kullanıcı adı + 6 haneli şifre gerekli';return}
+  E('loginStatus').textContent='Giriş yapılıyor…';
+  const h=await hashPin(pin);
+  try{
+    const us=await sbFetch('/rest/v1/users?username=eq.'+encodeURIComponent(u)+'&select=id,username,password_hash');
+    let id;
+    if(us.length){
+      if(us[0].password_hash&&us[0].password_hash!==h){E('loginStatus').textContent='Şifre hatalı';return}
+      if(!us[0].password_hash)await sbFetch('/rest/v1/users?id=eq.'+us[0].id,'PATCH',{password_hash:h});
+      id=us[0].id;
+    }else{const c=await sbFetch('/rest/v1/users','POST',{username:u,password_hash:h});id=c[0].id}
+    uid=id;localStorage.setItem('ez_uid',uid);
+    await cloudLoad();
+    E('loginStatus').textContent='';E('profilesCard').hidden=false;renderProfiles();
+  }catch(e){E('loginStatus').textContent='Bağlantı hatası: '+e.message}
+}
+async function cloudLoad(){
+  try{
+    const rows=await sbFetch('/rest/v1/meds?user_id=eq.'+uid+'&select=id,profile,data');
+    store.meds=rows.map(r=>({id:r.id,profile:r.profile,...r.data}));
+    const ids=[...new Set(store.meds.map(m=>m.profile))];
+    ids.forEach(pid=>{if(!store.profiles.some(p=>p.id===pid))store.profiles.push({id:pid,name:pid==='me'?'Ben':pid,emoji:pid==='me'?'🙂':'👤'})});
+    if(!store.active||!store.profiles.some(p=>p.id===store.active))store.active=ids[0]||'me';
+    store.save();
+  }catch(e){E('loginStatus').textContent='Senkron uyarısı: '+e.message}
+}
+async function syncMed(m){if(uid)try{await sbFetch('/rest/v1/meds?on_conflict=id','POST',{id:m.id,user_id:uid,profile:m.profile,data:m},'resolution=merge-duplicates,return=representation')}catch(e){}}
+async function delMedCloud(id){if(uid)try{await sbFetch('/rest/v1/meds?id=eq.'+id,'DELETE')}catch(e){}}
+function signout(){uid='';localStorage.removeItem('ez_uid');E('profilesCard').hidden=true;E('acctPin').value='';show('login');render()}
 
 /* ---- i18n ---- */
 const L={
@@ -236,7 +294,7 @@ function renderProfiles(){
     ${p.id!=='me'?`<button class="btn sm danger" onclick="delProfile('${p.id}')">✕</button>`:''}</div>`).join('');
 }
 function addProfile(){const v=E('newProfile').value.trim();if(!v)return;store.profiles.push({id:'p'+Date.now(),name:v,emoji:'👤'});store.save();E('newProfile').value='';render()}
-function delProfile(id){if(!confirm(t('del')+'?'))return;store.profiles=store.profiles.filter(p=>p.id!==id);store.meds=store.meds.filter(m=>m.profile!==id);if(store.active===id)store.active='me';store.save();render()}
+function delProfile(id){if(!confirm(t('del')+'?'))return;store.meds.filter(m=>m.profile===id).forEach(m=>delMedCloud(m.id));store.profiles=store.profiles.filter(p=>p.id!==id);store.meds=store.meds.filter(m=>m.profile!==id);if(store.active===id)store.active='me';store.save();render()}
 function pickProfile(id){store.active=id;store.save();show('main');tab('today',document.querySelector('.tab'));render()}
 function switchProfile(){show('login');render()}
 E('profileList').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it&&!e.target.closest('button')){const name=it.querySelector('span').textContent.trim().replace(/^\S+\s/,'');const p=store.profiles.find(x=>x.name===name);if(p)pickProfile(p.id)}});
@@ -256,7 +314,7 @@ function renderToday(){
 const tkKey=(id,tm,day)=>id+'|'+tm+'|'+day;
 function toggleDose(id,tm){
   const m=store.meds.find(x=>x.id===id);if(!m)return;m.doses=m.doses||{};const k=tkKey(id,tm,today());
-  m.doses[k]=!m.doses[k];m.taken=Math.max(0,Math.min(m.total,(m.taken||0)+(m.doses[k]?1:-1)));store.save();renderToday();renderMeds();
+  m.doses[k]=!m.doses[k];m.taken=Math.max(0,Math.min(m.total,(m.taken||0)+(m.doses[k]?1:-1)));store.save();syncMed(m);renderToday();renderMeds();
 }
 
 /* ---- İlaçlar ---- */
@@ -287,7 +345,7 @@ function openDetail(id){
   `);
 }
 const sec=(h,b)=>`<div class="card"><h3>${h}</h3><div>${b||t('noInfo')}</div></div>`;
-function delMed(id){if(!confirm(t('del')+'?'))return;store.meds=store.meds.filter(m=>m.id!==id);store.save();closeSheet();renderMeds();renderToday()}
+function delMed(id){if(!confirm(t('del')+'?'))return;store.meds=store.meds.filter(m=>m.id!==id);store.save();delMedCloud(id);closeSheet();renderMeds();renderToday()}
 
 /* ---- Ekle ---- */
 let draft={times:['08:00','20:00'],photo:'',b64:''};
@@ -347,11 +405,11 @@ async function readPhoto(){
 function saveMed(){
   const name=E('fName').value.trim();if(!name){alert(t('name'));return}
   const match=CATALOG.find(c=>name.toLowerCase().includes(c.name.split(' ')[0].toLowerCase()));
-  store.meds.push({id:'m'+Date.now(),profile:store.active,name,ing:(match&&match.ing)||'',dosage:E('fDose').value||(match&&match.dosage)||'',
+  const m={id:'m'+Date.now(),profile:store.active,name,ing:(match&&match.ing)||'',dosage:E('fDose').value||(match&&match.dosage)||'',
     usage:E('fUse').value||(match&&match.usage)||'',purpose:E('fPurpose').value||(match&&match.purpose)||'',side:E('fSide').value||(match&&match.side)||'',
     contra:(E('fContra').value||'').split('\n').filter(Boolean),expiry:E('fTet').value||'',photo:draft.photo||'',times:[...draft.times],
-    total:parseInt(E('fTotal').value)||60,taken:0,doses:{},created:Date.now()});
-  store.save();closeSheet();renderMeds();renderToday();
+    total:parseInt(E('fTotal').value)||60,taken:0,doses:{},created:Date.now()};
+  store.meds.push(m);store.save();syncMed(m);closeSheet();renderMeds();renderToday();
 }
 
 /* ---- Ayarlar ---- */
