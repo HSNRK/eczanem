@@ -271,7 +271,7 @@ const E=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));E('s-'+id).classList.add('active')}
 
 function render(){
-  E('ver').textContent='v4';
+  E('ver').textContent='v5';
   E('loginSub').textContent=t('tagline');
   E('profilePick').textContent=t('profiles');
   E('lblNew').textContent=t('newProfile');
@@ -381,8 +381,9 @@ function renderFreq(){E('freq').innerHTML=[
   {l:tf('daily',{n:1}),ts:['08:00']},{l:tf('daily',{n:2}),ts:['08:00','20:00']},{l:tf('daily',{n:3}),ts:['08:00','14:00','20:00']},
   {l:tf('every',{n:6,d:4}),ts:['06:00','12:00','18:00','00:00']},{l:tf('every',{n:4,d:6}),ts:['04:00','08:00','12:00','16:00','20:00','00:00']}
 ].map(f=>`<button class="chip" onclick='draft.times=${JSON.stringify(f.ts)};renderTimes()'>${f.l}</button>`).join('')}
-function renderTimes(){E('times').innerHTML=draft.times.sort().map(tm=>`<span class="chip on" onclick='draft.times=draft.times.filter(x=>x!="${tm}");renderTimes()'>${tm} ✕</span>`).join('')}
-function addTime(){const v=prompt(t('addTime')+' (SS:DD)','08:00');if(v&&/^\d{2}:\d{2}$/.test(v)){if(!draft.times.includes(v))draft.times.push(v);renderTimes()}}
+function renderTimes(){E('times').innerHTML=draft.times.map((tm,i)=>`<div class="row" style="gap:6px;margin-bottom:6px"><input type="time" class="ftime" data-i="${i}" value="${tm}" style="flex:1"><button class="btn sm danger" style="width:auto" onclick="removeTime(${i})">✕</button></div>`).join('');document.querySelectorAll('.ftime').forEach(inp=>{inp.onchange=()=>{draft.times[Number(inp.dataset.i)]=inp.value||'08:00'}})}
+function addTime(){draft.times.push('08:00');renderTimes()}
+function removeTime(i){draft.times.splice(i,1);renderTimes()}
 document.addEventListener('change',function(e){
   const inp=e.target.closest('.fchoose');if(!inp||!inp.files||!inp.files[0])return;
   const f=inp.files[0];const rd=new FileReader();
