@@ -207,9 +207,9 @@ function signout(){uid='';localStorage.removeItem('ez_uid');E('profilesCard').hi
 
 /* ---- i18n ---- */
 const L={
- tr:{flag:'🇹🇷',name:'TR',tagline:'İlaçlarını takip et, hatırlatmaları kaçırma.',profiles:'Profil Seç / Ekle',newProfile:'Yeni profil adı',switchP:'Değiştir',tabToday:'Bugün',tabMeds:'İlaçlar',tabSet:'Ayarlar',addMed:'+ İlaç Ekle',noMeds:'Henüz ilaç yok.',noActive:'Aktif ilaç yok',noActiveB:'İlk ilacını ekleyerek planını başlat.',progress:'{d}/{t} doz alındı',taken:'Alındı',pending:'Alınacak',purpose:'Ne işe yarar?',doseT:'Doz',usageT:'Kullanım şekli',contra:'Kullanılmaması gereken durumlar',side:'Yan etkiler',noInfo:'Bilgi eklenmedi.',del:'Sil',tet:'Son kullanma',left:'{n} doz kaldı',interact:'⚠️ Etkileşim Uyarısı',withDrug:'{d} ile kullanılmaz',addPhoto:'📸 Fotoğraf (kutu/prospektüs)',camBt:'📷 Çek',galBt:'🖼 Galeriden Seç',readPhoto:'📷 Fotoğraftan Oku',reading:'Okunuyor…',name:'İlaç adı',dosage:'Doz',usage:'Kullanım şekli',timeQ:'Günde kaç kez?',daily:'Günde {n}',every:'Her {n} saatte bir ({d} doz)',addTime:'+ Saat',save:'Kaydet',presc:'Reçete adedi',tetL:'Son kullanma (AA-YYYY)',errKey:'Önce Ayarlar → AI Anahtarı gir.',errBad:'AI anahtarı geçersiz.',errGen:'Fotoğraf okunamadı.',errNo:'Önce fotoğraf seç.',font:'🔠 Yazı Boyutu',fontH:'Yaşlılar için büyütülebilir.',lang:'🌐 Dil',key:'🔑 AI Anahtarı (OpenRouter)',keyH:'Fotoğraftan okuma için. Cihazında saklanır.',about:'⚠️ Sorumluluk Reddi',aboutT:'ECZANEM yalnızca bilgilendirme amaçlıdır; doktor, eczacı ya da resmî prospektüsün yerini tutmaz.',reset:'Tüm verileri sil',sizes:['Normal','Büyük','Çok Büyük']},
- en:{flag:'🇬🇧',name:'EN',tagline:'Track your meds, never miss a dose.',profiles:'Choose / Add Profile',newProfile:'New profile name',switchP:'Switch',tabToday:'Today',tabMeds:'Meds',tabSet:'Settings',addMed:'+ Add Medication',noMeds:'No medications yet.',noActive:'No active medications',noActiveB:'Add your first medication to start.',progress:'{d}/{t} doses taken',taken:'Taken',pending:'Pending',purpose:'What for?',doseT:'Dose',usageT:'How to use',contra:'Do not use when',side:'Side effects',noInfo:'No information.',del:'Delete',tet:'Expiry',left:'{n} doses left',interact:'⚠️ Interaction Warning',withDrug:'Do not use with {d}',addPhoto:'📸 Photo (box/leaflet)',readPhoto:'📷 Read from Photo',reading:'Reading…',name:'Medication name',dosage:'Dose',usage:'Usage',timeQ:'Times per day?',daily:'{n}x daily',every:'Every {n}h ({d} doses)',addTime:'+ Time',save:'Save',presc:'Count',tetL:'Expiry (MM-YYYY)',errKey:'Add AI key in Settings first.',errBad:'AI key invalid.',errGen:'Could not read photo.',errNo:'Pick a photo first.',font:'🔠 Text Size',fontH:'Enlarge for easy reading.',lang:'🌐 Language',key:'🔑 AI Key (OpenRouter)',keyH:'For photo reading. Stored on device.',about:'⚠️ Disclaimer',aboutT:'ECZANEM is informational only; not a substitute for your doctor/pharmacist.',reset:'Delete all data',sizes:['Normal','Large','Very Large']},
- es:{flag:'🇪🇸',name:'ES',tagline:'Controla tus medicamentos.',profiles:'Elegir / Añadir Perfil',newProfile:'Nombre del perfil',switchP:'Cambiar',tabToday:'Hoy',tabMeds:'Medicinas',tabSet:'Ajustes',addMed:'+ Añadir',noMeds:'Sin medicamentos.',noActive:'Sin medicamentos activos',noActiveB:'Añade el primero para empezar.',progress:'{d}/{t} dosis tomadas',taken:'Tomado',pending:'Pendiente',purpose:'¿Para qué?',doseT:'Dosis',usageT:'Modo de uso',contra:'No usar cuando',side:'Efectos secundarios',noInfo:'Sin información.',del:'Eliminar',tet:'Caducidad',left:'{n} dosis restantes',interact:'⚠️ Interacción',withDrug:'No usar con {d}',addPhoto:'📸 Foto (caja/prospecto)',readPhoto:'📷 Leer de Foto',reading:'Leyendo…',name:'Nombre',dosage:'Dosis',usage:'Uso',timeQ:'¿Veces al día?',daily:'{n}x al día',every:'Cada {n}h ({d} dosis)',addTime:'+ Hora',save:'Guardar',presc:'Cantidad',tetL:'Caducidad (MM-AAAA)',errKey:'Añade la clave IA en Ajustes.',errBad:'Clave IA inválida.',errGen:'No se pudo leer la foto.',errNo:'Primero elige una foto.',font:'🔠 Tamaño',fontH:'Agranda para leer.',lang:'🌐 Idioma',key:'🔑 Clave IA (OpenRouter)',keyH:'Para leer fotos. En tu dispositivo.',about:'⚠️ Aviso',aboutT:'ECZANEM es solo informativo; no sustituye a su médico/farmacéutico.',reset:'Borrar todo',sizes:['Normal','Grande','Muy Grande']}
+ tr:{flag:'🇹🇷',name:'TR',tagline:'İlaçlarını takip et, hatırlatmaları kaçırma.',profiles:'Profil Seç / Ekle',newProfile:'Yeni profil adı',switchP:'Değiştir',tabToday:'Bugün',tabMeds:'İlaçlar',tabSet:'Ayarlar',addMed:'+ İlaç Ekle',noMeds:'Henüz ilaç yok.',noActive:'Aktif ilaç yok',noActiveB:'İlk ilacını ekleyerek planını başlat.',progress:'{d}/{t} doz alındı',taken:'Alındı',pending:'Alınacak',purpose:'Ne işe yarar?',doseT:'Doz',usageT:'Kullanım şekli',contra:'Kullanılmaması gereken durumlar',side:'Yan etkiler',noInfo:'Bilgi eklenmedi.',del:'Sil',edit:'Düzenle',tet:'Son kullanma',left:'{n} doz kaldı',interact:'⚠️ Etkileşim Uyarısı',withDrug:'{d} ile kullanılmaz',addPhoto:'📸 Fotoğraf (kutu/prospektüs)',camBt:'📷 Çek',galBt:'🖼 Galeriden Seç',readPhoto:'📷 Fotoğraftan Oku',reading:'Okunuyor…',name:'İlaç adı',dosage:'Doz',usage:'Kullanım şekli',timeQ:'Günde kaç kez?',daily:'Günde {n}',every:'Her {n} saatte bir ({d} doz)',addTime:'+ Saat',save:'Kaydet',presc:'Reçete adedi',tetL:'Son kullanma (AA-YYYY)',errKey:'Önce Ayarlar → AI Anahtarı gir.',errBad:'AI anahtarı geçersiz.',errGen:'Fotoğraf okunamadı.',errNo:'Önce fotoğraf seç.',font:'🔠 Yazı Boyutu',fontH:'Yaşlılar için büyütülebilir.',lang:'🌐 Dil',key:'🔑 AI Anahtarı (OpenRouter)',keyH:'Fotoğraftan okuma için. Cihazında saklanır.',about:'⚠️ Sorumluluk Reddi',aboutT:'ECZANEM yalnızca bilgilendirme amaçlıdır; doktor, eczacı ya da resmî prospektüsün yerini tutmaz.',reset:'Tüm verileri sil',sizes:['Normal','Büyük','Çok Büyük']},
+ en:{flag:'🇬🇧',name:'EN',tagline:'Track your meds, never miss a dose.',profiles:'Choose / Add Profile',newProfile:'New profile name',switchP:'Switch',tabToday:'Today',tabMeds:'Meds',tabSet:'Settings',addMed:'+ Add Medication',noMeds:'No medications yet.',noActive:'No active medications',noActiveB:'Add your first medication to start.',progress:'{d}/{t} doses taken',taken:'Taken',pending:'Pending',purpose:'What for?',doseT:'Dose',usageT:'How to use',contra:'Do not use when',side:'Side effects',noInfo:'No information.',del:'Delete',edit:'Edit',tet:'Expiry',left:'{n} doses left',interact:'⚠️ Interaction Warning',withDrug:'Do not use with {d}',addPhoto:'📸 Photo (box/leaflet)',readPhoto:'📷 Read from Photo',reading:'Reading…',name:'Medication name',dosage:'Dose',usage:'Usage',timeQ:'Times per day?',daily:'{n}x daily',every:'Every {n}h ({d} doses)',addTime:'+ Time',save:'Save',presc:'Count',tetL:'Expiry (MM-YYYY)',errKey:'Add AI key in Settings first.',errBad:'AI key invalid.',errGen:'Could not read photo.',errNo:'Pick a photo first.',font:'🔠 Text Size',fontH:'Enlarge for easy reading.',lang:'🌐 Language',key:'🔑 AI Key (OpenRouter)',keyH:'For photo reading. Stored on device.',about:'⚠️ Disclaimer',aboutT:'ECZANEM is informational only; not a substitute for your doctor/pharmacist.',reset:'Delete all data',sizes:['Normal','Large','Very Large']},
+ es:{flag:'🇪🇸',name:'ES',tagline:'Controla tus medicamentos.',profiles:'Elegir / Añadir Perfil',newProfile:'Nombre del perfil',switchP:'Cambiar',tabToday:'Hoy',tabMeds:'Medicinas',tabSet:'Ajustes',addMed:'+ Añadir',noMeds:'Sin medicamentos.',noActive:'Sin medicamentos activos',noActiveB:'Añade el primero para empezar.',progress:'{d}/{t} dosis tomadas',taken:'Tomado',pending:'Pendiente',purpose:'¿Para qué?',doseT:'Dosis',usageT:'Modo de uso',contra:'No usar cuando',side:'Efectos secundarios',noInfo:'Sin información.',del:'Eliminar',edit:'Editar',tet:'Caducidad',left:'{n} dosis restantes',interact:'⚠️ Interacción',withDrug:'No usar con {d}',addPhoto:'📸 Foto (caja/prospecto)',readPhoto:'📷 Leer de Foto',reading:'Leyendo…',name:'Nombre',dosage:'Dosis',usage:'Uso',timeQ:'¿Veces al día?',daily:'{n}x al día',every:'Cada {n}h ({d} dosis)',addTime:'+ Hora',save:'Guardar',presc:'Cantidad',tetL:'Caducidad (MM-AAAA)',errKey:'Añade la clave IA en Ajustes.',errBad:'Clave IA inválida.',errGen:'No se pudo leer la foto.',errNo:'Primero elige una foto.',font:'🔠 Tamaño',fontH:'Agranda para leer.',lang:'🌐 Idioma',key:'🔑 Clave IA (OpenRouter)',keyH:'Para leer fotos. En tu dispositivo.',about:'⚠️ Aviso',aboutT:'ECZANEM es solo informativo; no sustituye a su médico/farmacéutico.',reset:'Borrar todo',sizes:['Normal','Grande','Muy Grande']}
 };
 let lang=localStorage.getItem('ez_lang')||'tr';
 let scale=parseFloat(localStorage.getItem('ez_scale')||'1');
@@ -273,7 +273,7 @@ const E=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));E('s-'+id).classList.add('active')}
 
 function render(){
-  E('ver').textContent='v7';
+  E('ver').textContent='v9';
   E('loginSub').textContent=t('tagline');
   E('profilePick').textContent=t('profiles');
   E('lblNew').textContent=t('newProfile');
@@ -344,18 +344,32 @@ function openDetail(id){
     ${sec(t('purpose'),m.purpose)}${sec(t('doseT'),m.dosage+(m.times&&m.times.length?`<div class="muted">${m.times.join(' / ')}</div>`:''))}
     ${sec(t('usageT'),m.usage)}${sec(t('contra'),(m.contra&&m.contra.length)?m.contra.map(c=>'• '+c).join('<br>'):t('noInfo'))}
     ${sec(t('side'),m.side)}
-    <button class="btn danger" style="margin-top:12px" onclick="delMed('${m.id}')">${t('del')}</button>
+    <div class="row" style="margin-top:14px;gap:10px">
+      <button class="btn" style="flex:1" onclick="editMed('${m.id}')">${t('edit')}</button>
+      <button class="btn danger" style="flex:1" onclick="delMed('${m.id}')">${t('del')}</button>
+    </div>
   `);
 }
 const sec=(h,b)=>`<div class="card"><h3>${h}</h3><div>${b||t('noInfo')}</div></div>`;
+function editMed(id){openAdd(id)}
 function delMed(id){if(!confirm(t('del')+'?'))return;store.meds=store.meds.filter(m=>m.id!==id);store.save();delMedCloud(id);closeSheet();renderMeds();renderToday()}
 
 /* ---- Ekle ---- */
 let draft={times:['08:00','20:00'],photo:'',b64:'',thumb:''};
-function openAdd(){
+let editingId=null;
+function openAdd(editId){
   draft={times:['08:00','20:00'],photo:'',b64:'',thumb:''};
+  editingId=editId||null;
+  if(editId){
+    const m=store.meds.find(x=>x.id===editId);
+    if(m){draft.times=[...(m.times||[])];draft.thumb=m.photo||''}
+  }
   openSheet(`
     <h3>${t('addMed')}</h3>
+    <label>${t('name')}</label><input id="fName">
+    <label>${t('dosage')}</label><input id="fDose">
+    <label>${t('usage')}</label><input id="fUse">
+    <div class="section" style="margin-top:8px">${t('addPhoto')}</div>
     <div class="row" style="gap:8px">
       <label class="btn ghost" style="flex:1;text-align:center;position:relative">${t('camBt')}<input type="file" accept="image/*" capture="environment" class="fchoose" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
       <label class="btn ghost" style="flex:1;text-align:center;position:relative">${t('galBt')}<input type="file" accept="image/*" class="fchoose" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
@@ -363,9 +377,6 @@ function openAdd(){
     <div id="pv"></div>
     <button class="btn ghost" onclick="readPhoto()" id="btnRead" style="margin-top:8px">${t('readPhoto')}</button>
     <div id="aiRes"></div>
-    <label>${t('name')}</label><input id="fName">
-    <label>${t('dosage')}</label><input id="fDose">
-    <label>${t('usage')}</label><input id="fUse">
     <label>${t('purpose')}</label><input id="fPurpose">
     <label>${t('contra')}</label><textarea id="fContra" rows="2"></textarea>
     <label>${t('side')}</label><textarea id="fSide" rows="2"></textarea>
@@ -378,6 +389,7 @@ function openAdd(){
     <button class="btn" style="margin-top:14px" onclick="saveMed()">${t('save')}</button>
   `);
   renderFreq();renderTimes();
+  if(editId){const m=store.meds.find(x=>x.id===editId);if(m){E('fName').value=m.name||'';E('fDose').value=m.dosage||'';E('fUse').value=m.usage||'';E('fPurpose').value=m.purpose||'';E('fContra').value=(m.contra||[]).join('\n');E('fSide').value=m.side||'';E('fTotal').value=m.total||60;E('fTet').value=m.expiry||'';if(m.photo)E('pv').innerHTML='<img src="'+m.photo+'" style="width:100%;border-radius:14px;margin-top:10px">';}}
 }
 function renderFreq(){E('freq').innerHTML=[
   {l:tf('daily',{n:1}),ts:['08:00']},{l:tf('daily',{n:2}),ts:['08:00','20:00']},{l:tf('daily',{n:3}),ts:['08:00','14:00','20:00']},
@@ -419,11 +431,14 @@ function saveMed(){
   try{
   const name=E('fName').value.trim();if(!name){alert(t('name'));return}
   const match=CATALOG.find(c=>name.toLowerCase().includes(c.name.split(' ')[0].toLowerCase()));
-  const m={id:'m'+Date.now()+Math.random().toString(36).slice(2,6),profile:store.active,name,ing:(match&&match.ing)||'',dosage:E('fDose').value||(match&&match.dosage)||'',
+  const upd={name,ing:(match&&match.ing)||'',dosage:E('fDose').value||(match&&match.dosage)||'',
     usage:E('fUse').value||(match&&match.usage)||'',purpose:E('fPurpose').value||(match&&match.purpose)||'',side:E('fSide').value||(match&&match.side)||'',
     contra:(E('fContra').value||'').split('\n').filter(Boolean),expiry:E('fTet').value||'',photo:draft.thumb||'',times:[...draft.times],
-    total:parseInt(E('fTotal').value)||60,taken:0,doses:{},created:Date.now()};
-  store.meds.push(m);store.save();syncMed(m).catch(()=>{});closeSheet();renderMeds();renderToday();
+    total:parseInt(E('fTotal').value)||60};
+  let m;
+  if(editingId){m=store.meds.find(x=>x.id===editingId);if(m)Object.assign(m,upd)}
+  else{m={id:'m'+Date.now()+Math.random().toString(36).slice(2,6),profile:store.active,...upd,taken:0,doses:{},created:Date.now()};store.meds.push(m)}
+  store.save();if(m)syncMed(m).catch(()=>{});editingId=null;closeSheet();renderMeds();renderToday();
   }catch(e){alert('Hata: '+e.message)}
 }
 
