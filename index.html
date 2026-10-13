@@ -224,6 +224,8 @@ const store={
   save(){localStorage.setItem('ez_profiles',JSON.stringify(this.profiles));localStorage.setItem('ez_active',this.active);localStorage.setItem('ez_meds',JSON.stringify(this.meds))}
 };
 if(!store.profiles.length){store.profiles=[{id:'me',name:'Ben',emoji:'🙂'}];store.active='me';store.save()}
+// Eski büyük fotoğrafları hafızadan ayıkla (kota açılsın)
+try{let ch=0;store.meds.forEach(m=>{if(m.photo&&m.photo.length>60000){m.photo='';ch=1}});if(ch)store.save()}catch(e){}
 const myMeds=()=>store.meds.filter(m=>m.profile===store.active);
 const today=()=>new Date().toISOString().slice(0,10);
 const remaining=m=>Math.max(0,m.total-m.taken);
@@ -271,7 +273,7 @@ const E=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));E('s-'+id).classList.add('active')}
 
 function render(){
-  E('ver').textContent='v6';
+  E('ver').textContent='v7';
   E('loginSub').textContent=t('tagline');
   E('profilePick').textContent=t('profiles');
   E('lblNew').textContent=t('newProfile');
@@ -349,9 +351,9 @@ const sec=(h,b)=>`<div class="card"><h3>${h}</h3><div>${b||t('noInfo')}</div></d
 function delMed(id){if(!confirm(t('del')+'?'))return;store.meds=store.meds.filter(m=>m.id!==id);store.save();delMedCloud(id);closeSheet();renderMeds();renderToday()}
 
 /* ---- Ekle ---- */
-let draft={times:['08:00','20:00'],photo:'',b64:''};
+let draft={times:['08:00','20:00'],photo:'',b64:'',thumb:''};
 function openAdd(){
-  draft={times:['08:00','20:00'],photo:'',b64:''};
+  draft={times:['08:00','20:00'],photo:'',b64:'',thumb:''};
   openSheet(`
     <h3>${t('addMed')}</h3>
     <div class="row" style="gap:8px">
@@ -388,7 +390,12 @@ document.addEventListener('change',function(e){
   const inp=e.target.closest('.fchoose');if(!inp||!inp.files||!inp.files[0])return;
   const f=inp.files[0];const rd=new FileReader();
   rd.onload=function(){const src=rd.result;const img=new Image();
-    img.onload=function(){const MAX=1280;let w=img.width,h=img.height;if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);draft.b64=c.toDataURL('image/jpeg',0.75).split(',')[1];draft.photo=src;E('pv').innerHTML='<img src="'+src+'" style="width:100%;border-radius:14px;margin-top:10px">'};
+    img.onload=function(){
+      let w=img.width,h=img.height,MAX=1280;if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}
+      const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);draft.b64=c.toDataURL('image/jpeg',0.75).split(',')[1];
+      let tw=img.width,th=img.height,T=320;if(tw>T||th>T){if(tw>th){th=Math.round(th*T/tw);tw=T}else{tw=Math.round(tw*T/th);th=T}}
+      const ct=document.createElement('canvas');ct.width=tw;ct.height=th;ct.getContext('2d').drawImage(img,0,0,tw,th);draft.thumb=ct.toDataURL('image/jpeg',0.7);
+      draft.photo=src;E('pv').innerHTML='<img src="'+draft.thumb+'" style="width:100%;border-radius:14px;margin-top:10px">'};
     img.src=src};
   rd.readAsDataURL(f);inp.value='';
 });
@@ -414,7 +421,7 @@ function saveMed(){
   const match=CATALOG.find(c=>name.toLowerCase().includes(c.name.split(' ')[0].toLowerCase()));
   const m={id:'m'+Date.now()+Math.random().toString(36).slice(2,6),profile:store.active,name,ing:(match&&match.ing)||'',dosage:E('fDose').value||(match&&match.dosage)||'',
     usage:E('fUse').value||(match&&match.usage)||'',purpose:E('fPurpose').value||(match&&match.purpose)||'',side:E('fSide').value||(match&&match.side)||'',
-    contra:(E('fContra').value||'').split('\n').filter(Boolean),expiry:E('fTet').value||'',photo:draft.photo||'',times:[...draft.times],
+    contra:(E('fContra').value||'').split('\n').filter(Boolean),expiry:E('fTet').value||'',photo:draft.thumb||'',times:[...draft.times],
     total:parseInt(E('fTotal').value)||60,taken:0,doses:{},created:Date.now()};
   store.meds.push(m);store.save();syncMed(m).catch(()=>{});closeSheet();renderMeds();renderToday();
   }catch(e){alert('Hata: '+e.message)}
