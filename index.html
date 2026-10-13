@@ -188,7 +188,7 @@ async function login(){
       id=us[0].id;
     }else{const c=await sbFetch('/rest/v1/users','POST',{username:u,password_hash:h});id=c[0].id}
     uid=id;localStorage.setItem('ez_uid',uid);
-    await cloudLoad();
+    await cloudLoad();subscribePush();
     E('loginStatus').textContent='';E('profilesCard').hidden=false;renderProfiles();
   }catch(e){E('loginStatus').textContent='Bağlantı hatası: '+e.message}
 }
@@ -274,7 +274,7 @@ const E=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));E('s-'+id).classList.add('active')}
 
 function render(){
-  E('ver').textContent='v10';
+  E('ver').textContent='v11';
   E('loginSub').textContent=t('tagline');
   E('profilePick').textContent=t('profiles');
   E('lblNew').textContent=t('newProfile');
@@ -475,6 +475,22 @@ function checkDue(){
 }
 checkDue();setInterval(checkDue,30000);
 requestNotif();
+
+/* ---- Web Push (kapalıyken alarm) ---- */
+const PUBLIC_VAPID='BCWZw9lzEOOMMdDHZxC0KqEJssTkA3ShIK21aUkmaORR2xYCvNlImf6QmPWXBympleHjDgrXc-Dg3UmRPmOJ7bg';
+function urlBase64ToUint8Array(b){const p=(b+'='.repeat((4-b.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/');const r=atob(p);const u=new Uint8Array(r.length);for(let i=0;i<r.length;i++)u[i]=r.charCodeAt(i);return u}
+function buf2b64(buf){let s='';const c=new Uint8Array(buf);for(let i=0;i<c.length;i++)s+=String.fromCharCode(c[i]);return btoa(s)}
+function subscribePush(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window)||!uid)return;
+  navigator.serviceWorker.ready.then(reg=>reg.pushManager.getSubscription().then(sub=>{
+    if(sub)return sub;
+    return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(PUBLIC_VAPID)});
+  }).then(async sub=>{
+    const k=sub.toJSON().keys;
+    if(uid)await sbFetch('/rest/v1/push_subs?on_conflict=user_id','POST',{user_id:uid,endpoint:sub.endpoint,keys:k},'resolution=merge-duplicates,return=representation').catch(()=>{});
+  })).catch(()=>{});
+}
+setTimeout(subscribePush,1500);
 
 /* ---- Başlat ---- */
 applyFont();render();

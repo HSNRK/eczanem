@@ -10,3 +10,5 @@ self.addEventListener('fetch',e=>{
   }
   e.respondWith(caches.open(CACHE).then(c=>c.match(e.request).then(hit=>hit||fetch(e.request).then(res=>{c.put(e.request,res.clone());return res}))));
 });
+self.addEventListener('push',e=>{let d={title:'ECZANEM',body:''};try{d=JSON.parse(e.data?e.data.text():'{}')}catch(e){}e.waitUntil(self.registration.showNotification(d.title||'ECZANEM',{body:d.body||'',icon:'logo.png',badge:'logo.png'}))});
+self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(l=>{if(l[0]){l[0].focus();if(l[0].navigate)l[0].navigate('./')}else self.clients.openWindow('./')}))});

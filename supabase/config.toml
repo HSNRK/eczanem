@@ -1,0 +1,4 @@
+project_id = "eczanem-pwa"
+
+[functions.send-doses]
+verify_jwt = false
