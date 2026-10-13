@@ -271,7 +271,7 @@ const E=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));E('s-'+id).classList.add('active')}
 
 function render(){
-  E('ver').textContent='v5';
+  E('ver').textContent='v6';
   E('loginSub').textContent=t('tagline');
   E('profilePick').textContent=t('profiles');
   E('lblNew').textContent=t('newProfile');
@@ -409,13 +409,15 @@ async function readPhoto(){
   }catch(e){E('aiRes').innerHTML=`<div class="ai">${e.message==='BAD'?t('errBad'):t('errGen')}</div>`}
 }
 function saveMed(){
+  try{
   const name=E('fName').value.trim();if(!name){alert(t('name'));return}
   const match=CATALOG.find(c=>name.toLowerCase().includes(c.name.split(' ')[0].toLowerCase()));
-  const m={id:'m'+Date.now(),profile:store.active,name,ing:(match&&match.ing)||'',dosage:E('fDose').value||(match&&match.dosage)||'',
+  const m={id:'m'+Date.now()+Math.random().toString(36).slice(2,6),profile:store.active,name,ing:(match&&match.ing)||'',dosage:E('fDose').value||(match&&match.dosage)||'',
     usage:E('fUse').value||(match&&match.usage)||'',purpose:E('fPurpose').value||(match&&match.purpose)||'',side:E('fSide').value||(match&&match.side)||'',
     contra:(E('fContra').value||'').split('\n').filter(Boolean),expiry:E('fTet').value||'',photo:draft.photo||'',times:[...draft.times],
     total:parseInt(E('fTotal').value)||60,taken:0,doses:{},created:Date.now()};
-  store.meds.push(m);store.save();syncMed(m);closeSheet();renderMeds();renderToday();
+  store.meds.push(m);store.save();syncMed(m).catch(()=>{});closeSheet();renderMeds();renderToday();
+  }catch(e){alert('Hata: '+e.message)}
 }
 
 /* ---- Ayarlar ---- */
