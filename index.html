@@ -274,7 +274,7 @@ const E=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));E('s-'+id).classList.add('active')}
 
 function render(){
-  E('ver').textContent='v11';
+  E('ver').textContent='v12';
   E('loginSub').textContent=t('tagline');
   E('profilePick').textContent=t('profiles');
   E('lblNew').textContent=t('newProfile');
@@ -487,7 +487,8 @@ function subscribePush(){
     return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(PUBLIC_VAPID)});
   }).then(async sub=>{
     const k=sub.toJSON().keys;
-    if(uid)await sbFetch('/rest/v1/push_subs?on_conflict=user_id','POST',{user_id:uid,endpoint:sub.endpoint,keys:k},'resolution=merge-duplicates,return=representation').catch(()=>{});
+    const tz=(typeof Intl!=='undefined'&&Intl.DateTimeFormat().resolvedOptions().timeZone)||'Europe/Istanbul';
+    if(uid)await sbFetch('/rest/v1/push_subs?on_conflict=user_id','POST',{user_id:uid,endpoint:sub.endpoint,keys:k,tz},'resolution=merge-duplicates,return=representation').catch(()=>{});
   })).catch(()=>{});
 }
 setTimeout(subscribePush,1500);
